@@ -20,6 +20,7 @@ Thumbs.db
 # Compilation/Build output folder
 build/bin/
 output/
+dist/
 
 # Jetbrains Configuration files
 .idea/
