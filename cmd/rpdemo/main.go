@@ -8,6 +8,8 @@ import (
 	"github.com/jantytgat/go-kit/pkg/application"
 	"github.com/jantytgat/go-kit/pkg/semver"
 	"github.com/jantytgat/go-kit/pkg/slogd"
+
+	"github.com/jantytgat/rpdemo/cmd/rpdemo/daemon"
 )
 
 var (
@@ -23,6 +25,10 @@ var (
 	semVersion semver.Version
 )
 
+var subCommands = []application.Commander{
+	daemon.Cmd,
+}
+
 func main() {
 	var err error
 
@@ -35,7 +41,7 @@ func main() {
 	}
 
 	application.New(appName, appTitle, appBanner, semVersion)
-	// application.RegisterCommands(subCommands, nil)
+	application.RegisterCommands(subCommands, nil)
 
 	if err = application.Run(ctx); err != nil {
 		slogd.Logger().LogAttrs(ctx, slogd.LevelError, "error running application", slog.Any("error", err))
