@@ -9,4 +9,4 @@ snapshot:
 	goreleaser release --snapshot --clean
 
 run:
-	./dist/rpdemo_darwin_arm64_v8.0/rpdemo daemon --log-level trace
+	go run cmd/rpdemo/main.go daemon --log-level trace

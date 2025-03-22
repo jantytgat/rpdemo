@@ -13,6 +13,7 @@ before:
     - make clean
     - go mod tidy
     - go generate ./...
+    - templ generate
 
 builds:
   - main: ./cmd/rpdemo/main.go
