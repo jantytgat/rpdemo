@@ -9,4 +9,5 @@ snapshot:
 	goreleaser release --snapshot --clean
 
 run:
+	templ generate
 	go run cmd/rpdemo/main.go daemon --log-level trace
