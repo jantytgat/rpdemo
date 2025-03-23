@@ -5,9 +5,10 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/a-h/templ"
 	"github.com/jantytgat/go-kit/pkg/application"
 	"github.com/spf13/cobra"
+
+	"github.com/jantytgat/rpdemo/internal/handlers"
 )
 
 const (
@@ -30,8 +31,7 @@ var Cmd = application.Command{
 func daemonRunE(cmd *cobra.Command, args []string) error {
 	mux := http.NewServeMux() // Create sample handler to returns 404
 
-	component := hello("Jan")
-	mux.Handle("/", templ.Handler(component, templ.WithStatus(200)))
+	mux.Handle("/", handlers.RootHandler{})
 	srv := application.NewHttpServer("0.0.0.0", 28080, mux)
 	srvCtx, srvCancel := context.WithCancel(cmd.Context())
 	defer srvCancel()
