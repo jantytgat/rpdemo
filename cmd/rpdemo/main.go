@@ -36,12 +36,15 @@ var (
 	// The environment variable prefix of all environment variables bound to our command line flags.
 	// For example, --number is bound to STING_NUMBER.
 	envPrefix = "RPDEMO"
+	vConfig   *viper.Viper
 
 	defaultConfigFilename = "rpdemo"
 	// Replace hyphenated flag names with camelCase in the config file
 	replaceHyphenWithCamelCase = false
 
-	baseFqdnFlag string
+	listenPortFlag int
+	baseFqdnFlag   string
+	colorFlag      string
 )
 
 func main() {
@@ -86,30 +89,32 @@ func bindFlags(cmd *cobra.Command, v *viper.Viper) {
 }
 
 func configureFlags(cmd *cobra.Command) {
+	// var err error
+	cmd.PersistentFlags().IntVarP(&listenPortFlag, "port", "p", 28080, "port to listen on")
 	cmd.PersistentFlags().StringVarP(&baseFqdnFlag, "base-fqdn", "", "", "base fqdn to use for the application")
-	if err := cmd.MarkPersistentFlagRequired("base-fqdn"); err != nil {
-		fmt.Println(err)
-	}
+
+	// Set color page
+	cmd.PersistentFlags().StringVarP(&colorFlag, "color-page", "", "white", "set page color (red, green, blue)")
 }
 
 func loadEnv(cmd *cobra.Command, args []string) error {
 	slogd.FromContext(cmd.Context()).LogAttrs(cmd.Context(), slogd.LevelDebug, "loading environment variables")
 
-	v := viper.New()
-	v.SetConfigName(defaultConfigFilename)
-	v.SetEnvPrefix(envPrefix)
-	v.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
-	v.AutomaticEnv()
+	vConfig = viper.New()
+	vConfig.SetConfigName(defaultConfigFilename)
+	vConfig.SetEnvPrefix(envPrefix)
+	vConfig.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
+	vConfig.AutomaticEnv()
 
-	bindFlags(cmd, v)
+	bindFlags(cmd, vConfig)
 	return nil
 }
 
 func runE(cmd *cobra.Command, args []string) error {
 	mux := http.NewServeMux() // Create sample handler to returns 404
 
-	mux.Handle("/", handlers.RootHandler{})
-	srv := application.NewHttpServer("0.0.0.0", 28080, mux)
+	mux.Handle("/", handlers.NewRootHandler(colorFlag))
+	srv := application.NewHttpServer("0.0.0.0", listenPortFlag, mux)
 	srvCtx, srvCancel := context.WithCancel(cmd.Context())
 	defer srvCancel()
 

@@ -4,8 +4,41 @@ import (
  "time"
  )
 
-templ rootHandler(keys []string, headers map[string]string, stamp time.Time) {
-    <h1>{ stamp.Format("02-01-2006 15:04:05") }</h1>
+type PageInfo struct {
+    Title string
+    Language string
+    BackgroundColor string
+    TextColor string
+}
+
+type HeaderData struct {
+    Keys []string
+    Headers map[string]string
+    OriginalHeaders string
+    Timestamp time.Time
+}
+
+css mainClass(bgColor, color string) {
+    background-color: { bgColor };
+    color: { color };
+}
+
+
+templ main(info PageInfo, headerData HeaderData) {
+    <!DOCTYPE html>
+    <html lang={ info.Language }>
+    <head>
+        <title>{ info.Title }</title>
+    </head>
+    <body class={ mainClass(info.BackgroundColor, info.TextColor) }>
+        @rootHandler(headerData)
+    </body>
+    </html>
+}
+
+templ rootHandler(headerData HeaderData) {
+    <h1>{ headerData.Timestamp.Format("02-01-2006 15:04:05") }</h1>
+    <h2>Received Headers</h2>
     <table>
     <thead>
         <tr>
@@ -14,12 +47,15 @@ templ rootHandler(keys []string, headers map[string]string, stamp time.Time) {
         </tr>
     </thead>
     <tbody>
-       for _, key := range keys {
+       for _, key := range headerData.Keys {
             <tr>
                 <td>{ key }</td>
-                <td> { headers[key] } </td>
+                <td>{ headerData.Headers[key] }</td>
             </tr>
        }
     </tbody>
     </table>
+    <br>
+    <h2>Original Headers</h2>
+    <div id="originalHeaders">{ headerData.OriginalHeaders }</div>
 }
