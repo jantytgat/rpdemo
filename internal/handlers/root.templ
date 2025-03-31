@@ -9,18 +9,35 @@ type PageInfo struct {
     Language string
     BackgroundColor string
     TextColor string
+    Method string
+    Uri string
 }
 
 type HeaderData struct {
     Keys []string
     Headers map[string]string
-    OriginalHeaders string
+    OriginalHeaders map[string]string
     Timestamp time.Time
 }
 
 css mainClass(bgColor, color string) {
     background-color: { bgColor };
     color: { color };
+}
+
+css table() {
+    border: 1px solid;
+}
+
+css tableHeader() {
+    border: 5px solid;
+    font-weight: bold;
+    font-size: 24px;
+}
+
+css tableHeaderKey() {
+    font-weight: bold;
+    font-size: 16px;
 }
 
 
@@ -30,32 +47,48 @@ templ main(info PageInfo, headerData HeaderData) {
     <head>
         <title>{ info.Title }</title>
     </head>
-    <body class={ mainClass(info.BackgroundColor, info.TextColor) }>
-        @rootHandler(headerData)
+    <body>
+        @rootHandler(info, headerData)
     </body>
     </html>
 }
 
-templ rootHandler(headerData HeaderData) {
-    <h1>{ headerData.Timestamp.Format("02-01-2006 15:04:05") }</h1>
-    <h2>Received Headers</h2>
-    <table>
+templ rootHandler(info PageInfo, headerData HeaderData) {
+    <div class={ mainClass(info.BackgroundColor, info.TextColor) }>
+        <h1>{ headerData.Timestamp.Format("02-01-2006 15:04:05") }</h1>
+    </div>
+    <h2>Request Info</h2>
+    <table class={ table() }>
+        <tbody>
+            <tr class={ table() }>
+                <td class={ tableHeaderKey() }>Method</td>
+                <td>{ info.Method }</td>
+            </tr>
+            <tr class={ table() }>
+                <td class={ tableHeaderKey() }>URI</td>
+                <td>{ info.Uri }</td>
+            </tr>
+        </tbody>
+        </table>
+    <h2>Request Headers</h2>
+    <table class={ table() }>
     <thead>
-        <tr>
-            <td>Header</td>
-            <td>Value</td>
+        <tr class={ tableHeader() }>
+            <td class={ tableHeader() }>Header</td>
+            <td class={ tableHeader() }>Received by Reverse Proxy</td>
+            <td class={ tableHeader() }>Received by application</td>
         </tr>
     </thead>
     <tbody>
        for _, key := range headerData.Keys {
-            <tr>
-                <td>{ key }</td>
+            <tr class={ table() }>
+                <td class={ tableHeaderKey() }>{ key }</td>
+                <td>{ headerData.OriginalHeaders[key] }</td>
                 <td>{ headerData.Headers[key] }</td>
             </tr>
        }
     </tbody>
     </table>
-    <br>
-    <h2>Original Headers</h2>
-    <div id="originalHeaders">{ headerData.OriginalHeaders }</div>
+    <h2>Response Headers from application</h2>
+    <div>RES_HEADER</div>
 }

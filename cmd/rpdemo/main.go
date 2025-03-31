@@ -112,9 +112,9 @@ func loadEnv(cmd *cobra.Command, args []string) error {
 
 func runE(cmd *cobra.Command, args []string) error {
 	mux := http.NewServeMux() // Create sample handler to returns 404
-
 	mux.Handle("/", handlers.NewRootHandler(colorFlag))
-	srv := application.NewHttpServer("0.0.0.0", listenPortFlag, mux)
+	srv := application.NewHttpServer("0.0.0.0", listenPortFlag, handlers.NewLogger(mux))
+
 	srvCtx, srvCancel := context.WithCancel(cmd.Context())
 	defer srvCancel()
 
