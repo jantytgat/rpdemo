@@ -27,7 +27,7 @@ func (h RootHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	var keys []string
 	for k := range r.Header {
-		if k != "X-Ns-Fullheader" {
+		if k != "X-Rpdemo-Req-Fullheader" {
 			keys = append(keys, k)
 		}
 	}
@@ -46,7 +46,7 @@ func (h RootHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		TextColor:       "white",
 	}
 
-	fullHeader := r.Header.Get("X-Ns-Fullheader")
+	fullHeader := r.Header.Get("X-Rpdemo-Req-Fullheader")
 	var fullHeaderBytes []byte
 	var originalHeaders []string
 	var originalHeadersMap = make(map[string]string)

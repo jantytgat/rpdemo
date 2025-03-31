@@ -91,4 +91,19 @@ templ rootHandler(info PageInfo, headerData HeaderData) {
     </table>
     <h2>Response Headers from application</h2>
     <div>RES_HEADER</div>
+    <h2>Additional Data</h2>
+    <table>
+    <thead>
+        <tr class={ tableHeader() }>
+            <td class={ tableHeader() }>Key</td>
+            <td class={ tableHeader() }>Value</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>TXID</td>
+            <td>RES_TXID</td>
+        </tr>
+    </tbody>
+    </table>
 }
