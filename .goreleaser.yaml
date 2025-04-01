@@ -25,6 +25,28 @@ builds:
       - darwin
       - freebsd
 
+dockers:
+  - image_templates:
+      - "timehole/rpdemo:{{ .Tag }}-amd64"
+    use: buildx
+    build_flag_templates:
+      - "--pull"
+      - "--platform=linux/amd64"
+  - image_templates:
+      - "timehole/rpdemo:{{ .Tag }}-arm64"
+    use: buildx
+    build_flag_templates:
+      - "--pull"
+      - "--platform=linux/arm64"
+    goarch: arm64
+
+docker_manifests:
+  - name_template: "timehole/rpdemo:{{ .Tag }}"
+    image_templates:
+      - "timehole/rpdemo:{{ .Tag }}-amd64"
+      - "timehole/rpdemo:{{ .Tag }}-arm64"
+    skip_push: false
+
 archives:
   - formats: [ 'tar.gz' ]
     # this name template makes the OS and Arch compatible with the results of `uname`.

@@ -1,0 +1,7 @@
+FROM scratch
+COPY rpdemo /
+
+ENV RPDEMO_COLOR_PAGE=red
+ENV RPDEMO_LOG_LEVEL=trace
+EXPOSE 28080/tcp
+ENTRYPOINT ["/rpdemo"]
