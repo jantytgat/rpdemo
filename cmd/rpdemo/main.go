@@ -64,6 +64,7 @@ func main() {
 	application.RegisterFlag(configureFlags)
 	application.OverrideRunE(runE)
 	application.RegisterPersistentPreRunE(loadEnv)
+	application.RegisterPersistentPreRunE(updateLogLevel)
 	if err = application.Run(ctx); err != nil {
 		slogd.Logger().LogAttrs(ctx, slogd.LevelError, "error running application", slog.Any("error", err))
 		os.Exit(1)
@@ -83,7 +84,10 @@ func bindFlags(cmd *cobra.Command, v *viper.Viper) {
 		// Apply the viper config value to the flag when the flag is not set and viper has a value
 		if !f.Changed && v.IsSet(configName) {
 			val := v.Get(configName)
-			cmd.Flags().Set(f.Name, fmt.Sprintf("%v", val))
+			if cmd.Flag(configName) != nil {
+				cmd.Flags().Set(f.Name, fmt.Sprintf("%v", val))
+			}
+			slogd.FromContext(cmd.Context()).LogAttrs(cmd.Context(), slogd.LevelTrace, "updated flag", slog.String(configName, fmt.Sprintf("%v", val)))
 		}
 	})
 }
@@ -108,6 +112,14 @@ func loadEnv(cmd *cobra.Command, args []string) error {
 
 	bindFlags(cmd, vConfig)
 	return nil
+}
+
+func updateLogLevel(cmd *cobra.Command, args []string) error {
+	level, err := cmd.Flags().GetString("log-level")
+	if err == nil {
+		slogd.SetLevel(slogd.Level(level))
+	}
+	return err
 }
 
 func runE(cmd *cobra.Command, args []string) error {
