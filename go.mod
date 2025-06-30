@@ -3,7 +3,7 @@ module github.com/jantytgat/rpdemo
 go 1.24.1
 
 require (
-	github.com/a-h/templ v0.3.865
+	github.com/a-h/templ v0.3.906
 	github.com/jantytgat/go-kit v0.1.5
 	github.com/spf13/cobra v1.9.1
 	github.com/spf13/pflag v1.0.6
